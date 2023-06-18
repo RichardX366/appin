@@ -10,7 +10,9 @@ services:
       - traefik.enable=true
       - traefik.http.routers.appin.rule=Host(`appin.richardx.win`)
     environment:
-      - KEY=$KEY
+      - DATABASE_URL=$DATABASE_URL
+      - JWT_SECRET=$JWT_SECRET
+      - ADMIN_PASSWORD=$ADMIN_PASSWORD
 
 networks:
   default:
