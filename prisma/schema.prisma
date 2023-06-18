@@ -3,13 +3,50 @@ generator client {
 }
 
 datasource db {
-  provider     = "postgres"
+  provider     = "mysql"
   url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
 
 model User {
-  name     String
-  email    String @id
-  password String
+  id                    String     @id @default(uuid())
+  email                 String     @unique
+  name                  String
+  password              String
+  gender                Gender
+  notifications         Boolean    @default(true)
+  private               Boolean    @default(false)
+  emailVerificationCode String?    @default(uuid())
+  bio                   String?    @db.Text
+  phone                 String?
+  discord               String?
+  address               String?
+  createdAt             DateTime   @default(now())
+  authLevel             AuthLevel  @default(USER)
+  xp                    Int        @default(0)
+  xpUpdates             XpUpdate[]
+}
+
+model XpUpdate {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  reason    String
+  userId    String
+  amount    Int
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+enum AuthLevel {
+  USER
+  MEMBER
+  OFFICER
+  ADMIN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  PREFER_NOT_TO_SAY
 }

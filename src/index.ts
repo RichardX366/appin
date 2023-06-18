@@ -1,7 +1,6 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import attachMiddleware from 'rx-express-middleware';
-import './types';
 
 export const app = express();
 attachMiddleware(app);
