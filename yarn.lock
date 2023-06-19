@@ -258,7 +258,7 @@ __metadata:
     express: 4.18.1
     jsonwebtoken: ^9.0.0
     prisma: ^4.15.0
-    rx-express-middleware: ^1.0.2
+    rx-express-middleware: ^1.0.6
     typescript: 4.7.4
   languageName: unknown
   linkType: soft
@@ -878,9 +878,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rx-express-middleware@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "rx-express-middleware@npm:1.0.2"
+"rx-express-middleware@npm:^1.0.6":
+  version: 1.0.6
+  resolution: "rx-express-middleware@npm:1.0.6"
   dependencies:
     "@prisma/client": 4.6.1
     "@types/cookie-parser": ^1.4.3
@@ -892,7 +892,7 @@ __metadata:
   peerDependencies:
     "@prisma/client": ^4.6.1
     prisma: ^4.6.1
-  checksum: 8847c67169c9f3813708dbe0af134b91fb7a095b631d4fdbc7bb961445e9a19796c4117e9907624d878468dea8257aae06208d24f5664f3758d3b4aec896442d
+  checksum: 244b7b18ddba2e82dc126862ef6fbdcc5e3f190781fcef864d317ca8739be846280bf23d39b163f4e3019061f3f70f6f0bf55a2c0948eca26c84061db685cf69
   languageName: node
   linkType: hard
 

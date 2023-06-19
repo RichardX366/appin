@@ -1,7 +1,6 @@
 import { RequestHandler } from 'express';
 import { prisma } from '..';
 import { compareSync, hashSync } from 'bcryptjs';
-import { setCookie } from '../helpers/cookies';
 import {
   idFromCookieToken,
   requireAuth,
@@ -13,7 +12,7 @@ import { privateUser } from '../helpers/sanitize';
 
 export const logIn: RequestHandler = async (req, res) => {
   const { email, password } = req.body;
-
+  res.cookie('token', 'test', { signed: true });
   const user = await prisma.user.findUniqueOrThrow({
     where: { email },
     include: { xpUpdates: true },
@@ -21,7 +20,7 @@ export const logIn: RequestHandler = async (req, res) => {
 
   if (!compareSync(password, user.password)) throw 'Invalid password';
 
-  setCookie(req, res, 'token', signUser(user.id));
+  res.cookie('token', signUser(user.id), { maxAge: 3e10 });
   res.json(privateUser(user));
 };
 
@@ -58,7 +57,7 @@ export const signUp: RequestHandler = async (req, res) => {
     },
   });
 
-  setCookie(req, res, 'token', signUser(user.id));
+  res.cookie('token', signUser(user.id), { maxAge: 3e10 });
   res.json(privateUser(user));
 };
 
