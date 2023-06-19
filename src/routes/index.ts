@@ -12,6 +12,5 @@ baseRouter.get('/', (req, res) => {
 baseRouter.use('/auth', authRouter);
 baseRouter.use('/xp', xpRouter);
 baseRouter.use('/user', userRouter);
-baseRouter.get('/cookies', (req, res) => res.json(req.cookies));
 
 export default baseRouter;
