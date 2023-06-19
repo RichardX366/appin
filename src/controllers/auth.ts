@@ -12,7 +12,7 @@ import { privateUser } from '../helpers/sanitize';
 
 export const logIn: RequestHandler = async (req, res) => {
   const { email, password } = req.body;
-  res.cookie('token', 'test', { signed: true });
+
   const user = await prisma.user.findUniqueOrThrow({
     where: { email },
     include: { xpUpdates: true },
