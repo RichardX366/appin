@@ -1,8 +1,9 @@
 import { Router } from 'express';
-import { fetchUser } from '../controllers/user';
+import { fetchUser, fetchUsers } from '../controllers/user';
 
 const userRouter = Router();
 
+userRouter.get('/', fetchUsers);
 userRouter.get('/:id', fetchUser);
 
 export default userRouter;

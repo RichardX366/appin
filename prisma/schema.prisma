@@ -15,7 +15,6 @@ model User {
   password              String
   gender                Gender
   notifications         Boolean    @default(true)
-  private               Boolean    @default(false)
   emailVerificationCode String?    @default(uuid())
   bio                   String?    @db.Text
   phone                 String?

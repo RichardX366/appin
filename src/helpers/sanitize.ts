@@ -11,11 +11,9 @@ export type PrivateUser = Omit<
 
 export type PublicUser = {
   createdAt: string;
-  email: string;
   name: string;
   gender: Gender;
   bio: string | null;
-  discord: string | null;
   authLevel: AuthLevel;
   xp: number;
   xpUpdates: XpUpdate[];
@@ -29,12 +27,10 @@ export const privateUser = (
 });
 
 export const publicUserSelect = {
-  email: true,
   createdAt: true,
   name: true,
   gender: true,
   bio: true,
-  discord: true,
   authLevel: true,
   xp: true,
   xpUpdates: true,
