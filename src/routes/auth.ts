@@ -11,12 +11,12 @@ const authRouter = Router();
 
 authRouter.post('/login', logIn);
 authRouter.post('/signUp', signUp);
-authRouter.put('/:id', updateUser);
-authRouter.put('/updatePassword/:id', updatePassword);
-authRouter.put('/authLevel/:id', updateAuthLevel);
 authRouter.post('/logout', (req, res) => {
   res.clearCookie('token');
   res.send('success');
 });
+authRouter.put('/updatePassword/:id', updatePassword);
+authRouter.put('/authLevel/:id', updateAuthLevel);
+authRouter.put('/:id', updateUser);
 
 export default authRouter;
