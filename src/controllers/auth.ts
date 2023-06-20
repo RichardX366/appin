@@ -35,6 +35,15 @@ export const signUp: RequestHandler = async (req, res) => {
     gender,
     phone,
     discord,
+    reasonForJoining,
+    schoolCity,
+    schoolName,
+    talentsAndGoals,
+    managementApplication,
+    joinedDiscord,
+    parentEmail,
+    parentName,
+    resumeLink,
   } = req.body;
 
   if (isInvalidEmail(email)) throw 'Invalid email';
@@ -51,6 +60,15 @@ export const signUp: RequestHandler = async (req, res) => {
       gender,
       phone,
       discord,
+      reasonForJoining,
+      schoolCity,
+      schoolName,
+      talentsAndGoals,
+      managementApplication,
+      joinedDiscord,
+      parentEmail,
+      parentName,
+      resumeLink,
     },
     include: {
       xpUpdates: true,
