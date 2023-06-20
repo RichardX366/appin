@@ -14,5 +14,9 @@ authRouter.post('/signUp', signUp);
 authRouter.put('/:id', updateUser);
 authRouter.put('/updatePassword/:id', updatePassword);
 authRouter.put('/authLevel/:id', updateAuthLevel);
+authRouter.post('/logout', (req, res) => {
+  res.clearCookie('token');
+  res.send('success');
+});
 
 export default authRouter;
