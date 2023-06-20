@@ -24,6 +24,13 @@ config();
       notifications: true,
       authLevel: 'ADMIN',
       gender: 'MALE',
+      address: '1234 Main St',
+      reasonForJoining: 'I want to help people',
+      schoolCity: 'San Francisco',
+      schoolName: 'San Francisco State University',
+      talentsAndGoals: 'I am good at math',
+      discord: 'discorder',
+      joinedDiscord: true,
     },
   });
   console.log('Created user');

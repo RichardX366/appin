@@ -16,10 +16,19 @@ model User {
   gender                Gender
   notifications         Boolean    @default(true)
   emailVerificationCode String?    @default(uuid())
-  bio                   String?    @db.Text
+  bio                   String     @db.Text
+  reasonForJoining      String     @db.Text
+  talentsAndGoals       String     @db.Text
+  managementApplication Boolean    @default(false)
+  resumeLink            String?
   phone                 String?
   discord               String?
-  address               String?
+  joinedDiscord         Boolean    @default(false)
+  address               String
+  schoolName            String
+  schoolCity            String
+  parentEmail           String?
+  parentName            String?
   createdAt             DateTime   @default(now())
   authLevel             AuthLevel  @default(USER)
   xp                    Int        @default(0)
