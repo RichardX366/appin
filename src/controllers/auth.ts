@@ -2,13 +2,15 @@ import { RequestHandler } from 'express';
 import { prisma } from '..';
 import { compareSync, hashSync } from 'bcryptjs';
 import {
-  idFromCookieToken,
   requireAuth,
   requireAuthLevel,
-  signUser,
+  signData,
+  userFromRefreshToken,
+  userToAccessToken,
 } from '../helpers/guards';
 import { isInvalidEmail } from '../helpers/misc';
-import { privateUser } from '../helpers/sanitize';
+import { privateUser, publicUser } from '../helpers/sanitize';
+import { AuthLevel } from '@prisma/client';
 
 export const logIn: RequestHandler = async (req, res) => {
   const { email, password } = req.body;
@@ -18,14 +20,11 @@ export const logIn: RequestHandler = async (req, res) => {
     include: { xpUpdates: true },
   });
 
-  if (!compareSync(password, user.password)) throw 'Invalid password';
-  if (!req.headers.referer) throw 'Invalid referer';
+  if (!compareSync(password, user.password)) {
+    throw new Error('Incorrect password!');
+  }
 
-  res.cookie('token', signUser(user.id), {
-    maxAge: 3e10,
-    domain: new URL(req.headers.referer).host,
-  });
-  res.json(privateUser(user));
+  res.json({ user: privateUser(user), token: userToAccessToken(user) });
 };
 
 export const signUp: RequestHandler = async (req, res) => {
@@ -44,14 +43,18 @@ export const signUp: RequestHandler = async (req, res) => {
     schoolName,
     talentsAndGoals,
     managementApplication,
-    joinedDiscord,
     parentEmail,
     parentName,
     resumeLink,
   } = req.body;
 
-  if (isInvalidEmail(email)) throw 'Invalid email';
-  if (password.length < 8) throw 'Password must be at least 8 characters';
+  if (isInvalidEmail(email)) throw new Error('Invalid email');
+  if (parentEmail && isInvalidEmail(parentEmail)) {
+    throw new Error('Invalid parent email');
+  }
+  if (password.length < 8) {
+    throw new Error('Password must be at least 8 characters');
+  }
 
   const user = await prisma.user.create({
     data: {
@@ -69,7 +72,6 @@ export const signUp: RequestHandler = async (req, res) => {
       schoolName,
       talentsAndGoals,
       managementApplication,
-      joinedDiscord,
       parentEmail,
       parentName,
       resumeLink,
@@ -79,30 +81,61 @@ export const signUp: RequestHandler = async (req, res) => {
     },
   });
 
-  res.cookie('token', signUser(user.id), { maxAge: 3e10 });
-  res.json(privateUser(user));
+  res.json({ user: privateUser(user), token: userToAccessToken(user) });
 };
 
 export const updateUser: RequestHandler = async (req, res) => {
   const { id } = req.params;
 
-  if (typeof id !== 'string') throw 'Invalid ID';
   try {
     requireAuth(req, id);
   } catch {
-    await requireAuthLevel(req, 'ADMIN');
+    requireAuthLevel(req, 'ADMIN');
   }
 
-  const { name, address, notifications, bio, gender, phone } = req.body;
+  const {
+    email,
+    name,
+    address,
+    notifications,
+    bio,
+    gender,
+    phone,
+    discord,
+    reasonForJoining,
+    schoolCity,
+    schoolName,
+    talentsAndGoals,
+    managementApplication,
+    parentEmail,
+    parentName,
+    resumeLink,
+  } = req.body;
+
+  if (isInvalidEmail(email)) throw new Error('Invalid email');
+  if (parentEmail && isInvalidEmail(parentEmail)) {
+    throw new Error('Invalid parent email');
+  }
+
   const user = await prisma.user.update({
     where: { id },
     data: {
+      email,
       name,
       address,
       notifications,
       bio,
       gender,
       phone,
+      discord,
+      reasonForJoining,
+      schoolCity,
+      schoolName,
+      talentsAndGoals,
+      managementApplication,
+      parentEmail,
+      parentName,
+      resumeLink,
     },
     include: {
       xpUpdates: true,
@@ -116,13 +149,12 @@ export const updatePassword: RequestHandler = async (req, res) => {
   const { id } = req.params;
   const { currentPassword, newPassword } = req.body;
 
-  if (typeof id !== 'string') throw 'Invalid ID';
   requireAuth(req, id);
 
   const user = await prisma.user.findUniqueOrThrow({ where: { id } });
 
   if (!compareSync(currentPassword, user.password)) {
-    throw 'Invalid current password';
+    throw new Error('Invalid current password');
   }
 
   await prisma.user.update({
@@ -135,24 +167,11 @@ export const updatePassword: RequestHandler = async (req, res) => {
 
 export const updateAuthLevel: RequestHandler = async (req, res) => {
   const { id } = req.params;
-  const { authLevel } = req.body;
+  const authLevel = req.body.authLevel as AuthLevel;
 
-  if (typeof id !== 'string') throw 'Invalid ID';
-
-  const requestAuthLevel = await prisma.user
-    .findUniqueOrThrow({
-      where: { id: idFromCookieToken(req) },
-    })
-    .then((user) => user.authLevel);
-
-  if (requestAuthLevel === 'USER' || requestAuthLevel === 'MEMBER') {
-    throw 'Unauthorized';
-  }
-  if (
-    requestAuthLevel === 'OFFICER' &&
-    (authLevel === 'ADMIN' || authLevel === 'OFFICER')
-  ) {
-    throw 'Unauthorized';
+  requireAuthLevel(req, 'OFFICER');
+  if (authLevel === 'OFFICER' || authLevel === 'ADMIN') {
+    requireAuthLevel(req, 'ADMIN');
   }
 
   const user = await prisma.user.update({
@@ -161,5 +180,13 @@ export const updateAuthLevel: RequestHandler = async (req, res) => {
     include: { xpUpdates: true },
   });
 
-  res.json(privateUser(user));
+  res.json(publicUser(user));
+};
+
+export const refreshToken: RequestHandler = async (req, res) => {
+  const { token } = req.body;
+
+  const user = await userFromRefreshToken(token);
+
+  res.json(userToAccessToken(user));
 };

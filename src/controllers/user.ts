@@ -10,11 +10,12 @@ export const fetchUser: RequestHandler = async (req, res) => {
     where: { id },
     include: { xpUpdates: true },
   });
+
   try {
     try {
       requireAuth(req, id);
     } catch {
-      await requireAuthLevel(req, 'ADMIN');
+      requireAuthLevel(req, 'ADMIN');
     }
     res.json(privateUser(user));
   } catch {
