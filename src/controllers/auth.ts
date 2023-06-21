@@ -19,8 +19,12 @@ export const logIn: RequestHandler = async (req, res) => {
   });
 
   if (!compareSync(password, user.password)) throw 'Invalid password';
+  if (!req.headers.referer) throw 'Invalid referer';
 
-  res.cookie('token', signUser(user.id), { maxAge: 3e10 });
+  res.cookie('token', signUser(user.id), {
+    maxAge: 3e10,
+    domain: new URL(req.headers.referer).host,
+  });
   res.json(privateUser(user));
 };
 
