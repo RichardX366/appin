@@ -5,7 +5,7 @@ import { AES, enc } from 'crypto-js';
 import { prisma } from '..';
 import { compareSync } from 'bcryptjs';
 
-// Refresh Token: Signed { email, password (encrypted) }
+// Refresh Token: Signed { id, password (encrypted) }
 // Access Token: Signed { id, authLevel }
 
 export const signData = (data: any, expiration?: string) => {
@@ -31,6 +31,9 @@ export const decrypt = (data: string) =>
 
 export const authLevelToNumber = (level: AuthLevel): number =>
   Object.keys(AuthLevel).indexOf(level);
+
+export const getRefreshToken = (id: string, password: string) =>
+  signData({ id, password: encrypt(password) });
 
 export const userFromRefreshToken = async (token?: string) => {
   if (!token) {

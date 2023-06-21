@@ -1,16 +1,16 @@
+import { AuthLevel } from '@prisma/client';
+import { compareSync, hashSync } from 'bcryptjs';
 import { RequestHandler } from 'express';
 import { prisma } from '..';
-import { compareSync, hashSync } from 'bcryptjs';
 import {
+  getRefreshToken,
   requireAuth,
   requireAuthLevel,
-  signData,
   userFromRefreshToken,
   userToAccessToken,
 } from '../helpers/guards';
 import { isInvalidEmail } from '../helpers/misc';
 import { privateUser, publicUser } from '../helpers/sanitize';
-import { AuthLevel } from '@prisma/client';
 
 export const logIn: RequestHandler = async (req, res) => {
   const { email, password } = req.body;
@@ -24,7 +24,11 @@ export const logIn: RequestHandler = async (req, res) => {
     throw new Error('Incorrect password!');
   }
 
-  res.json({ user: privateUser(user), token: userToAccessToken(user) });
+  res.json({
+    user: privateUser(user),
+    access: userToAccessToken(user),
+    refresh: getRefreshToken(user.id, password),
+  });
 };
 
 export const signUp: RequestHandler = async (req, res) => {
@@ -81,7 +85,11 @@ export const signUp: RequestHandler = async (req, res) => {
     },
   });
 
-  res.json({ user: privateUser(user), token: userToAccessToken(user) });
+  res.json({
+    user: privateUser(user),
+    access: userToAccessToken(user),
+    refresh: getRefreshToken(user.id, password),
+  });
 };
 
 export const updateUser: RequestHandler = async (req, res) => {
@@ -162,7 +170,10 @@ export const updatePassword: RequestHandler = async (req, res) => {
     data: { password: hashSync(newPassword) },
   });
 
-  res.json('success');
+  res.json({
+    access: userToAccessToken(user),
+    refresh: getRefreshToken(user.id, newPassword),
+  });
 };
 
 export const updateAuthLevel: RequestHandler = async (req, res) => {
