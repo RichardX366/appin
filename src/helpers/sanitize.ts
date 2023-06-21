@@ -10,6 +10,7 @@ export type PrivateUser = Omit<
 };
 
 export type PublicUser = {
+  id: string;
   createdAt: string;
   name: string;
   gender: Gender;
@@ -27,6 +28,7 @@ export const privateUser = (
 });
 
 export const publicUserSelect = {
+  id: true,
   createdAt: true,
   name: true,
   gender: true,
