@@ -30,7 +30,7 @@ model User {
   parentEmail           String?
   parentName            String?
   createdAt             DateTime   @default(now())
-  authLevel             AuthLevel  @default(USER)
+  authLevel             AuthLevel  @default(MEMBER)
   xp                    Int        @default(0)
   xpUpdates             XpUpdate[]
 }
@@ -47,7 +47,6 @@ model XpUpdate {
 }
 
 enum AuthLevel {
-  USER
   MEMBER
   OFFICER
   ADMIN

@@ -180,10 +180,7 @@ export const updateAuthLevel: RequestHandler = async (req, res) => {
   const { id } = req.params;
   const authLevel = req.body.authLevel as AuthLevel;
 
-  requireAuthLevel(req, 'OFFICER');
-  if (authLevel === 'OFFICER' || authLevel === 'ADMIN') {
-    requireAuthLevel(req, 'ADMIN');
-  }
+  requireAuthLevel(req, 'ADMIN');
 
   const user = await prisma.user.update({
     where: { id },
