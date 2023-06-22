@@ -29,12 +29,13 @@ export const fetchUser: RequestHandler = async (req, res) => {
 };
 
 export const fetchUsers: RequestHandler = async (req, res) => {
-  const { name, level } = req.stringQuery;
+  const { name, email, query, level } = req.stringQuery;
 
   res.json(
     await paginate(req.stringQuery, 'user', {
       where: {
-        name: { contains: name },
+        name: { contains: query || name },
+        email: { contains: query || email },
         authLevel: level || undefined,
       },
       select: { ...publicUserSelect, xpUpdates: false },
