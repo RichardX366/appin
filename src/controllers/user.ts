@@ -31,14 +31,19 @@ export const fetchUser: RequestHandler = async (req, res) => {
 export const fetchUsers: RequestHandler = async (req, res) => {
   const { name, email, query, level } = req.stringQuery;
 
-  res.json(
-    await paginate(req.stringQuery, 'user', {
-      where: {
-        name: { contains: query || name },
-        email: { contains: query || email },
-        authLevel: level || undefined,
-      },
-      select: { ...publicUserSelect, xpUpdates: false },
-    } as Prisma.UserFindManyArgs),
-  );
+  const data = await paginate(req.stringQuery, 'user', {
+    where: {
+      name: { contains: query || name },
+      email: { contains: query || email },
+      authLevel: level || undefined,
+    },
+  } as Prisma.UserFindManyArgs);
+
+  try {
+    requireAuthLevel(req, 'ADMIN');
+    res.json({ ...data, data: data.data.map(privateUser) });
+  } catch (e) {
+    if (errorIsAccessTokenExpiration(e)) throw e;
+    res.json({ ...data, data: data.data.map(publicUser) });
+  }
 };
