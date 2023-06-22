@@ -157,6 +157,9 @@ export const updatePassword: RequestHandler = async (req, res) => {
   const { id } = req.params;
   const { currentPassword, newPassword } = req.body;
 
+  if (newPassword.length < 8) {
+    throw new Error('Password must be at least 8 characters');
+  }
   requireAuth(req, id);
 
   const user = await prisma.user.findUniqueOrThrow({ where: { id } });
