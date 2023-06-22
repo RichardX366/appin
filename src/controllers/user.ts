@@ -5,7 +5,7 @@ import {
   requireAuth,
   requireAuthLevel,
 } from '../helpers/guards';
-import { privateUser, publicUser, publicUserSelect } from '../helpers/sanitize';
+import { privateUser, publicUser } from '../helpers/sanitize';
 import { Prisma } from '@prisma/client';
 
 export const fetchUser: RequestHandler = async (req, res) => {
