@@ -5,6 +5,9 @@ import { AES, enc } from 'crypto-js';
 import { prisma } from '..';
 import { compareSync } from 'bcryptjs';
 
+export const errorIsAccessTokenExpiration = (e: any) =>
+  e?.message === 'Your access token is expired.';
+
 // Refresh Token: Signed { id, password (encrypted) }
 // Access Token: Signed { id, authLevel }
 

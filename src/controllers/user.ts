@@ -1,6 +1,10 @@
 import { RequestHandler } from 'express';
 import { paginate, prisma } from '..';
-import { requireAuth, requireAuthLevel } from '../helpers/guards';
+import {
+  errorIsAccessTokenExpiration,
+  requireAuth,
+  requireAuthLevel,
+} from '../helpers/guards';
 import { privateUser, publicUser, publicUserSelect } from '../helpers/sanitize';
 import { Prisma } from '@prisma/client';
 
@@ -18,7 +22,8 @@ export const fetchUser: RequestHandler = async (req, res) => {
       requireAuthLevel(req, 'ADMIN');
     }
     res.json(privateUser(user));
-  } catch {
+  } catch (e) {
+    if (errorIsAccessTokenExpiration(e)) throw e;
     res.json(publicUser(user));
   }
 };
