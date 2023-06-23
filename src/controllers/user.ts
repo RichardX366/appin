@@ -33,7 +33,7 @@ export const fetchUsers: RequestHandler = async (req, res) => {
 
   const data = await paginate(req.stringQuery, 'user', {
     where: {
-      $OR: [
+      OR: [
         { name: { contains: query || name } },
         { email: { contains: query || email } },
       ],
