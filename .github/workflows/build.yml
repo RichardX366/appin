@@ -29,7 +29,7 @@ jobs:
       - name: Docker Log In
         uses: docker/login-action@v2
         with:
-          registry: registry.richardx.win
+          registry: registry.richardxiong.com
           username: admin
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Build
@@ -39,11 +39,11 @@ jobs:
           context: .
           builder: ${{ steps.buildx.outputs.name }}
           load: true
-          tags: registry.richardx.win/appin:latest
+          tags: registry.richardxiong.com/appin:latest
           platforms: linux/arm64
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
       - name: Push
-        run: docker push registry.richardx.win/appin:latest
+        run: docker push registry.richardxiong.com/appin:latest
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
